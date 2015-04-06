@@ -14,9 +14,10 @@ window.onload = function() {
 		flower: [0,1],
 		bush1: [0,2],
 		bush2: [1,2],
-		bullet: [2,2],
+		mine: [2,2],
 		player: [0,3]
 	});
+	
 	
 	//method to randomly generate the map
 	function generateWorld() {
@@ -41,7 +42,7 @@ window.onload = function() {
 
 				// 1/19 chance add random bushes
 				if(i > 0 && i < 48 && j > 0 && j < 39 && Crafty.randRange(0, 20) > 19) {
-					Crafty.e("2D, Canvas, rand_bush, bush1")
+					Crafty.e("2D, Canvas, rand_bush, mine")
 					.attr({x: i * 16, y: j * 16});
 				}
 			}
@@ -110,7 +111,6 @@ window.onload = function() {
 					else if(this.isDown("UP_ARROW")) this.y -= this._speed;
 					else if(this.isDown("DOWN_ARROW")) this.y += this._speed;
 				});
-				
 				return this;
 			}
 		});
@@ -137,6 +137,7 @@ window.onload = function() {
 					if(!this.isPlaying("walk_down"))
 						this.stop().animate("walk_down", 10);
 				}
+			
 			}).bind("keyup", function(e) {
 				this.stop();
 			})
@@ -159,6 +160,5 @@ window.onload = function() {
 				this.x += this._speed;
 				this.stop();
 			});
-			// add fire bullet here, SPACE
 	});
 };

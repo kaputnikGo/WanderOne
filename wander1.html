@@ -1,14 +1,31 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>	<script type="text/javascript" src="crafty-min.js"></script>
-	<script type="text/javascript" src="wanderOne.js"></script>
+<head>	
+	<script type="text/javascript" src="crafty/crafty-053.js"></script>
+	<!--<script type="text/javascript" src="wanderOne.js"></script>-->
+	<script type="text/javascript" src="wander/game.js"></script>
+	<script type="text/javascript" src="wander/components.js"></script>
+	<script type="text/javascript" src="wander/scenes.js"></script>
+	
+	<script>
+		window.addEventListener('load', Game.start);
+	</script>
+	
 	<title>WanderOne</title>
+	
 	<style>
 	body, html { margin:0; padding: 0; overflow:hidden; font-family:Arial; font-size:20px }
 	#cr-stage { border:2px solid black; margin:5px auto; color:white }
 	</style>
+	
 </head>
 <body>
+<p><em> using crafty 0.5.3</em></p>
+<div id="charPos" style="font-size: 8px; padding-left: 12px;" >
+	<p>
+	position: <div id="playerPosition" style="display: inline-block;">0, 0 </div> 
+	</p>
+</div>
 </body>
 </html>
