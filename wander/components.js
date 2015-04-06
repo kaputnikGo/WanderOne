@@ -11,7 +11,7 @@ Crafty.c('Grid', {
 	// Locate this entity at the given position on the grid
 	at: function(x, y) {
 		if (x === undefined && y === undefined) {
-			return { x: this.x/Game.map_grid.tile.width, y: this.y/Game.map_grid.tile.height }
+			return { x: this.x / Game.map_grid.tile.width, y: this.y / Game.map_grid.tile.height }
 		} else {
 			this.attr({ x: x * Game.map_grid.tile.width, y: y * Game.map_grid.tile.height });
 			return this;
@@ -44,14 +44,33 @@ Crafty.c('Bush', {
 // A Rock is just an Actor with a certain sprite
 Crafty.c('Rock', {
 	init: function() {
-    this.requires('Actor, Solid, spr_rock');
+		this.requires('Actor, Moveable, Collision, spr_rock')
+			.onHit('Solid', this.hitSolid);
+		this.attr({
+			// need axis of move?
+			canMove: 1
+		})
 	},
+	// Stops the movement
+	stopMovement: function() {
+		this._speed = 0;
+		if (this._movement) {
+			this.x -= this._movement.x;
+			this.y -= this._movement.y;
+		}
+	},
+	
+	hitSolid: function() {
+		Game.rockHitSolid();
+		this.stopMovement();
+		this.canMove = 0;
+	}
 });
 
 // A ladder is just an Actor with a certain sprite
 Crafty.c('Ladder', {
 	init: function() {
-		this.requires('Actor, Solid, spr_ladder');
+		this.requires('Actor, Magic, spr_ladder')
 	},
 });
 
@@ -61,6 +80,7 @@ Crafty.c('PlayerCharacter', {
 		this.requires('Actor, Fourway, Collision, spr_player, SpriteAnimation')
 			.fourway(2)
 			.stopOnSolids()
+			.onHit('Moveable', this.hitMoveable)
 			.onHit('Village', this.visitVillage)
 			// These next lines define our four animations
 			//  each call to .animate specifies:
@@ -88,13 +108,16 @@ Crafty.c('PlayerCharacter', {
 				this.stop();
 			}
 		});
+		this.bind('EnterFrame', function() { 
+			// send co-ords to html
+			Game.trackPlayer(this);
+		});		
 	},
-
 	// Registers a stop-movement function to be called when
 	//  this entity hits an entity with the "Solid" component
 	stopOnSolids: function() {
-		this.onHit('Solid', this.stopMovement);
-
+		this.onHit('Solid', this.hitSolid);
+		this.onHit('Magic', this.hitMagic);
 		return this;
 	},
 
@@ -106,11 +129,34 @@ Crafty.c('PlayerCharacter', {
 			this.y -= this._movement.y;
 		}
 	},
+	
+	hitSolid: function() {
+		Game.hitSolid();
+		this.stopMovement();
+	},
+	
+	hitMagic: function() {
+		// diff type of magic thing?
+		Game.hitMagicLadder();
+		this.stopMovement();		
+	},
+	
+	hitMoveable: function(data) {
+		rock = data[0].obj;
+		Game.hitMoveableRock(rock);
+		if (this._movement && rock.canMove === 1) {
+			rock.x += this._movement.x;
+			rock.y += this._movement.y;
+		}
+		else {
+			this.stopMovement();
+		}
+	},	
 
 	// Respond to this player visiting a village
 	visitVillage: function(data) {
-		villlage = data[0].obj;
-		villlage.visit();
+		Game.visitVille();
+		data[0].obj.visit();
 	}
 });
 
@@ -127,3 +173,27 @@ Crafty.c('Village', {
 		Crafty.trigger('VillageVisited', this);
 	}
 });
+
+
+
+/*
+
+Crafty.c('bullet', {
+    init: function() {
+        this.requires('2D, DOM');
+    },
+    bullet: function(parameters) {
+        // do the stuff you were doing in your init function
+        return this;
+    }
+});
+Then your shoot function looks like this:
+
+shoot: function() {
+    Crafty.e('bullet').attr({x: this._x+someMath, y: this._y+someMath})
+        .bullet(this._rotation);
+}
+
+
+
+*/

@@ -1,20 +1,13 @@
 // Game scene
 // -------------
 // Runs the core gameplay loop
+
 Crafty.scene('Game', function() {
-	// A 2D array to keep track of all occupied tiles
-	this.occupied = new Array(Game.map_grid.width);
-	for (var i = 0; i < Game.map_grid.width; i++) {
-		this.occupied[i] = new Array(Game.map_grid.height);
-		for (var y = 0; y < Game.map_grid.height; y++) {
-			this.occupied[i][y] = false;
-		}
-	}
 
 	// Player character, placed at 5, 5 on our grid
-	this.player = Crafty.e('PlayerCharacter').at(5, 5);
-	this.occupied[this.player.at().x][this.player.at().y] = true;
-
+	this.player = Crafty.e('PlayerCharacter').at(STARTX, STARTY);
+	occupied[this.player.at().x][this.player.at().y] = true;
+	
 	// Place a tree at every edge square on our grid of 16x16 tiles
 	for (var x = 0; x < Game.map_grid.width; x++) {
 		for (var y = 0; y < Game.map_grid.height; y++) {
@@ -23,12 +16,12 @@ Crafty.scene('Game', function() {
 			if (at_edge) {
 				// Place a tree entity at the current tile
 				Crafty.e('Tree').at(x, y)
-				this.occupied[x][y] = true;
-			} else if (Math.random() < 0.06 && !this.occupied[x][y]) {
+				occupied[x][y] = true;
+			} else if (Math.random() < 0.06 && !occupied[x][y]) {
 				// Place a bush entity at the current tile
 				var bush_or_rock = (Math.random() > 0.3) ? 'Bush' : 'Rock'
 				Crafty.e(bush_or_rock).at(x, y)
-				this.occupied[x][y] = true;
+				occupied[x][y] = true;
 			}
 		}
 	}
@@ -38,7 +31,7 @@ Crafty.scene('Game', function() {
 	for (var x = 0; x < Game.map_grid.width; x++) {
 		for (var y = 0; y < Game.map_grid.height; y++) {
 			if (Math.random() < 0.03) {
-				if (Crafty('Village').length < max_villages && !this.occupied[x][y]) {
+				if (Crafty('Village').length < max_villages && !occupied[x][y]) {
 					Crafty.e('Village').at(x, y);
 				}
 			}
@@ -49,15 +42,16 @@ Crafty.scene('Game', function() {
 	// aim for furthest corner section of map away from player
 	var ladderx = Crafty.math.randomInt(1, Game.map_grid.width - 1);
 	var laddery = Crafty.math.randomInt(1, Game.map_grid.height - 1);
-	console.log("start found: " + ladderx + ", " + laddery);
-	if (!this.occupied[ladderx][laddery]) {
+	logger("start found: " + ladderx + ", " + laddery);
+	if (!occupied[ladderx][laddery]) {
 		Crafty.e('Ladder').at(ladderx, laddery);
-		this.occupied[ladderx][laddery] = true;
-		console.log("ladder now occupied at: " + ladderx + ", " + laddery); 
+		occupied[ladderx][laddery] = true;
+		logger("ladder now occupied at: " + ladderx + ", " + laddery); 
 	}
 	else {
 		// log the result
-		console.log("no, occupied space at: " + ladderx + ", " + laddery);
+		// need to retry...
+		logger("no, occupied space at: " + ladderx + ", " + laddery);
 	}
 
 	// Play a ringing sound to indicate the start of the journey
@@ -69,6 +63,7 @@ Crafty.scene('Game', function() {
 			Crafty.scene('Victory');
 		}
 	});
+	
 }, function() {
 	// Remove our event binding from above so that we don't
 	//  end up having multiple redundant event watchers after
@@ -165,7 +160,28 @@ Crafty.scene('Loading', function(){
 			ring:     ['assets/candy_dish_lid.mp3', 'assets/candy_dish_lid.ogg', 'assets/candy_dish_lid.aac']
 		});
 		*/
+		
+		// initialising function
+		Crafty.scene('Initial');
+		
 		// Now that our sprites are ready to draw, start the game
 		Crafty.scene('Game');
 	})
+});
+
+// Init the scene
+// -------------
+// Handles the loading of binary assets such as images and audio files
+Crafty.scene('Initial', function(){
+	logger("hi from the initial");
+		// A 2D array to keep track of all occupied tiles
+	//Crafty.occupied = new Array(Game.map_grid.width);	
+	/*
+	for (var i = 0; i < Game.map_grid.width; i++) {
+		Game.occupied[i] = new Array(Game.map_grid.height);
+		for (var y = 0; y < Game.map_grid.height; y++) {
+			Game.occupied[i][y] = false;
+		}
+	}
+	*/
 });
