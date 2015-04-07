@@ -60,8 +60,10 @@ Crafty.c('Rock', {
 		}
 	},
 	
-	hitSolid: function() {
-		Game.rockHitSolid();
+	hitSolid: function(data) {
+		rock = data[0].obj;
+		Game.rockHitSolid(rock);
+		//processCollideSolid(this, rock);
 		this.stopMovement();
 		this.canMove = 0;
 	}

@@ -68,8 +68,8 @@ Game = {
 		
 	},
 	
-	rockHitSolid: function() {
-		document.getElementById("playerResult").innerHTML = "rock hit solid!";
+	rockHitSolid: function(rock) {		
+		document.getElementById("playerResult").innerHTML = "rock hit solid! rock.xy: " + rock.x + ", " + rock.y;
 	},
 	
 	trackPlayer: function(player) {
@@ -86,6 +86,12 @@ function initArray() {
 			occupied[x][y] = false;
 		}
 	}
+}
+
+function processCollideSolid(collider, object) {
+	// require 2 objects, collider, object collided with	
+	logger("collider xy: " + collider.x + ", " + collider.y);
+	logger("object xy: " + object.x + ", " + object.y);
 }
 
 $text_css = { 'font-size': '24px', 'font-family': 'Arial', 'color': 'white', 'text-align': 'center' }
